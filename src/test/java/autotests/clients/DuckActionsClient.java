@@ -58,14 +58,13 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                 .message()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body("{\n" +
-                        "  \"color\": color,\n" +
-                        "  \"height\": height,\n" +
-                        "  \"material\": material,\n" +
-                        "  \"sound\": sound,\n" +
-                        "  \"wingsState\": wingsState\n" +
+                        "  \"color\": \"" + color + "\",\n" +
+                        "  \"height\": \"" + height + "\",\n" +
+                        "  \"material\": \"" + material + "\",\n" +
+                        "  \"sound\": \"" + sound + "\",\n" +
+                        "  \"wingsState\": \"" + wingsState + "\"\n" +
                         "}"));
     }
-
     public void duckDelete(TestCaseRunner runner, String id) {
         runner.$(http().client(yellowDuckService)
                 .send()
