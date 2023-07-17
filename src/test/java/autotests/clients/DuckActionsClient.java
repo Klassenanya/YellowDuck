@@ -50,46 +50,4 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                 .queryParam("id", id)
                 .message().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
-
-    public void duckCreate(TestCaseRunner runner, String color, String height, String material, String sound, String wingsState) {
-        runner.$(http().client(yellowDuckService)
-                .send()
-                .post("/api/duck/create")
-                .message()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("{\n" +
-                        "  \"color\": \"" + color + "\",\n" +
-                        "  \"height\": \"" + height + "\",\n" +
-                        "  \"material\": \"" + material + "\",\n" +
-                        "  \"sound\": \"" + sound + "\",\n" +
-                        "  \"wingsState\": \"" + wingsState + "\"\n" +
-                        "}"));
-    }
-
-    public void duckDelete(TestCaseRunner runner, String id) {
-        runner.$(http().client(yellowDuckService)
-                .send()
-                .delete("/api/duck/delete")
-                .queryParam("id", id)
-                .message().contentType(MediaType.APPLICATION_JSON_VALUE));
-    }
-
-    public void duckGetAllIds(TestCaseRunner runner) {
-        runner.$(http().client(yellowDuckService)
-                .send()
-                .get("/api/duck/getAllIds"));
-    }
-
-    public void duckUpdate(TestCaseRunner runner, String color, String height, String id, String material, String sound, String wingsState) {
-        runner.$(http().client(yellowDuckService)
-                .send()
-                .put("/api/duck/update")
-                .queryParam("color", color)
-                .queryParam("height", height)
-                .queryParam("id", id)
-                .queryParam("material", material)
-                .queryParam("sound", sound)
-                .queryParam("wingsState", wingsState)
-                .message().contentType(MediaType.APPLICATION_JSON_VALUE));
-    }
 }
