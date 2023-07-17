@@ -51,7 +51,7 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                 .message().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
-    public void duckCreate(TestCaseRunner runner, String color, int height, String material, String sound, String wingsState) {
+    public void duckCreate(TestCaseRunner runner, String color, String height, String material, String sound, String wingsState) {
         runner.$(http().client(yellowDuckService)
                 .send()
                 .post("/api/duck/create")
@@ -77,8 +77,7 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
     public void duckGetAllIds(TestCaseRunner runner) {
         runner.$(http().client(yellowDuckService)
                 .send()
-                .get("/api/duck/getAllIds")
-                .message().contentType(MediaType.APPLICATION_JSON_VALUE));
+                .get("/api/duck/getAllIds"));
     }
 
     public void duckUpdate(TestCaseRunner runner, String color, String height, String id, String material, String sound, String wingsState) {
