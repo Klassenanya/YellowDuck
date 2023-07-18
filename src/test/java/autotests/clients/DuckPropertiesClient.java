@@ -25,7 +25,7 @@ public class DuckPropertiesClient extends TestNGCitrusSpringSupport {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body("{\n" +
                         "  \"color\": \"" + color + "\",\n" +
-                        "  \"height\": \"" + height + "\",\n" +
+                        "  \"height\": " + height + ",\n" +
                         "  \"material\": \"" + material + "\",\n" +
                         "  \"sound\": \"" + sound + "\",\n" +
                         "  \"wingsState\": \"" + wingsState + "\"\n" +
@@ -36,8 +36,7 @@ public class DuckPropertiesClient extends TestNGCitrusSpringSupport {
         runner.$(http().client(yellowDuckService)
                 .send()
                 .delete("/api/duck/delete")
-                .queryParam("id", id)
-                .message().contentType(MediaType.APPLICATION_JSON_VALUE));
+                .queryParam("id", id));
     }
 
     public void duckGetAllIds(TestCaseRunner runner) {
@@ -55,7 +54,6 @@ public class DuckPropertiesClient extends TestNGCitrusSpringSupport {
                 .queryParam("id", id)
                 .queryParam("material", material)
                 .queryParam("sound", sound)
-                .queryParam("wingsState", wingsState)
-                .message().contentType(MediaType.APPLICATION_JSON_VALUE));
+                .queryParam("wingsState", wingsState));
     }
 }
