@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
+// Для запроса create + для ответов методов create, properties
 public class DuckProperties {
 
     @JsonProperty
@@ -18,6 +19,9 @@ public class DuckProperties {
 
     @JsonProperty
     private double height;
+
+    @JsonProperty
+    private int id;
 
     @JsonProperty
     private String material;

@@ -58,38 +58,29 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                 .get("/api/duck/action/swim")
                 .queryParam("id", id));
     }
-
-    //Валидация ответа String'ой
-    @Description("Валидация полученного ответа")
-    public void validateResponseS(TestCaseRunner runner) {
+    
+    @Description("Валидация полученного ответа String'ой")
+    public void validateResponseString(TestCaseRunner runner, String response) {
         runner.$(http()
                 .client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message().type(MessageType.JSON)
-                .body("{\n" +
-                        " \"color\": \"yellow\",\n" +
-                        " \"height\": 10,\n" +
-                        " \"material\": \"plastic\",\n" +
-                        " \"sound\": \"crya-crya\",\n" +
-                        " \"wingsState\": \"ACTIVE\"\n" +
-                        "}"));
+                .body(response));
     }
 
-    //Валидация ответа из папки Resources
-    @Description("Валидация полученного ответа")
-    public void validateResponseR(TestCaseRunner runner) {
+    @Description("Валидация полученного ответа из папки Resources")
+    public void validateResponseResources(TestCaseRunner runner, String expectedPayload) {
         runner.$(http()
                 .client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message().type(MessageType.JSON)
-                .body(new ClassPathResource("getDuckProperties/createYellowDuck.json")));
+                .body(new ClassPathResource(expectedPayload)));
     }
 
-    //Валидация ответа из папки Payload
-    @Description("Валидация полученного ответа")
-    public void validateResponseP(TestCaseRunner runner, Object duckProperties) {
+    @Description("Валидация полученного ответа из папки Payload")
+    public void validateResponsePayload(TestCaseRunner runner, Object duckProperties) {
         runner.$(http()
                 .client(yellowDuckService)
                 .receive()
