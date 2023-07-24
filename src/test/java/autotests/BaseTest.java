@@ -8,6 +8,7 @@ import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
 import com.consol.citrus.validation.json.JsonPathMessageValidationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Description;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,7 +51,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .queryParam(nameQueryParam3, valueQueryParam3));
     }
 
-    // String
+    @Description("Создание уточки String'ой")
     protected void sendPostRequest(TestCaseRunner runner, HttpClient URL, String path, String body) {
         runner.$(http()
                 .client(URL)
@@ -61,7 +62,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .body(body));
     }
 
-    // Resources
+    @Description("Создание уточки из папки Resources")
     protected void sendPostRequestResources(TestCaseRunner runner, HttpClient URL, String path, String body) {
         runner.$(http()
                 .client(URL)
@@ -72,7 +73,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .body(new ClassPathResource(body)));
     }
 
-    // Payload
+    @Description("Создание уточки из папки Payload")
     protected void sendPostRequest(TestCaseRunner runner, HttpClient URL, String path, Object body) {
         runner.$(http()
                 .client(URL)
@@ -90,7 +91,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .queryParam(nameQueryParam, valueQueryParam));
     }
 
-    // String
+    @Description("Валидация полученного ответа String'ой")
     protected void validateResponse(TestCaseRunner runner, HttpClient URL, HttpStatus status, String body) {
         runner.$(http()
                 .client(URL)
@@ -99,8 +100,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .message().type(MessageType.JSON)
                 .body(body));
     }
-
-    // Resources
+    @Description("Валидация полученного ответа из папки Resources")
     protected void validateResponseResources(TestCaseRunner runner, HttpClient URL, HttpStatus status, String body) {
         runner.$(http()
                 .client(URL)
@@ -111,7 +111,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
 
     }
 
-    // Payload
+    @Description("Валидация полученного ответа из папки Payload")
     protected void validateResponse(TestCaseRunner runner, HttpClient URL, HttpStatus status, Object body) {
         runner.$(http()
                 .client(URL)
@@ -121,7 +121,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .body(new ObjectMappingPayloadBuilder(body, new ObjectMapper())));
     }
 
-    // JsonPath
+    @Description("Валидация полученного ответа по JsonPath")
     protected void validateResponse(TestCaseRunner runner, HttpClient URL, HttpStatus status, JsonPathMessageValidationContext.Builder body) {
         runner.$(http()
                 .client(URL)
