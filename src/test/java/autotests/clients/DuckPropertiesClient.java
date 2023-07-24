@@ -1,52 +1,46 @@
 package autotests.clients;
 
-        import autotests.EndpointConfig;
-        import com.consol.citrus.TestCaseRunner;
-        import com.consol.citrus.http.client.HttpClient;
-        import com.consol.citrus.message.MessageType;
-        import com.consol.citrus.message.builder.ObjectMappingPayloadBuilder;
-        import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
-        import com.fasterxml.jackson.databind.ObjectMapper;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.context.annotation.Description;
-        import org.springframework.core.io.ClassPathResource;
-        import org.springframework.http.HttpStatus;
-        import org.springframework.http.MediaType;
-        import org.springframework.test.context.ContextConfiguration;
+import autotests.BaseTest;
+import com.consol.citrus.TestCaseRunner;
+import com.consol.citrus.validation.json.JsonPathMessageValidationContext;
+import org.springframework.context.annotation.Description;
+import org.springframework.http.HttpStatus;
+import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
-        import java.awt.*;
+public class DuckPropertiesClient extends BaseTest {
 
-        import static com.consol.citrus.http.actions.HttpActionBuilder.http;
+    public void duckIdExtract (TestCaseRunner runner) {
+        extractVariables (runner, yellowDuckService, "$.id", "duckId");
+    }
 
-@ContextConfiguration(classes = {EndpointConfig.class})
-public class DuckPropertiesClient extends TestNGCitrusSpringSupport {
-    @Autowired
-    protected HttpClient yellowDuckService;
-
+    @Description("Создание уточки String'ой")
     public void duckCreate(TestCaseRunner runner, String color, String height, String material, String sound, String wingsState) {
-        runner.$(http().client(yellowDuckService)
-                .send()
-                .post("/api/duck/create")
-                .message()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("{\n" +
-                        "  \"color\": \"" + color + "\",\n" +
-                        "  \"height\": " + height + ",\n" +
-                        "  \"material\": \"" + material + "\",\n" +
-                        "  \"sound\": \"" + sound + "\",\n" +
-                        "  \"wingsState\": \"" + wingsState + "\"\n" +
-                        "}"));
+        sendPostRequest(runner, yellowDuckService,"/api/duck/create","{\n" +
+                "  \"color\": \"" + color + "\",\n" +
+                "  \"height\": " + height + ",\n" +
+                "  \"material\": \"" + material + "\",\n" +
+                "  \"sound\": \"" + sound + "\",\n" +
+                "  \"wingsState\": \"" + wingsState + "\"\n" +
+                "}");
+    }
+
+    @Description("Создание уточки из папки Resources")
+    public void duckCreateResources(TestCaseRunner runner, String expectedPayload) {
+        sendPostRequestResources(runner, yellowDuckService, "/api/duck/create", expectedPayload);
+    }
+
+    @Description("Создание уточки из папки Payload")
+    public void duckCreate(TestCaseRunner runner, Object duckProperties) {
+        sendPostRequest(runner, yellowDuckService, "/api/duck/create", duckProperties);
     }
 
     public void duckDelete(TestCaseRunner runner, String id) {
-        runner.$(http().client(yellowDuckService)
-                .send()
-                .delete("/api/duck/delete")
-                .queryParam("id", id));
+        sendDeleteRequest(runner, yellowDuckService, "/api/duck/delete", "id", id);
     }
 
     public void duckGetAllIds(TestCaseRunner runner) {
-        runner.$(http().client(yellowDuckService)
+        runner.$(http()
+                .client(yellowDuckService)
                 .send()
                 .get("/api/duck/getAllIds"));
     }
@@ -64,32 +58,22 @@ public class DuckPropertiesClient extends TestNGCitrusSpringSupport {
     }
 
     @Description("Валидация полученного ответа String'ой")
-    public void validateResponseString(TestCaseRunner runner, String response) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message().type(MessageType.JSON)
-                .body(response));
+    public void validateResponse(TestCaseRunner runner, HttpStatus status, String response) {
+        validateResponse(runner, yellowDuckService, status, response);
     }
 
     @Description("Валидация полученного ответа из папки Resources")
-    public void validateResponseResources(TestCaseRunner runner, String expectedPayload) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message().type(MessageType.JSON)
-                .body(new ClassPathResource(expectedPayload)));
+    public void validateResponseResources(TestCaseRunner runner, HttpStatus status, String expectedPayload) {
+        validateResponseResources(runner, yellowDuckService, status, expectedPayload);
     }
 
     @Description("Валидация полученного ответа из папки Payload")
-    public void validateResponsePayload(TestCaseRunner runner, Object duckProperties) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message().type(MessageType.JSON)
-                .body(new ObjectMappingPayloadBuilder(duckProperties, new ObjectMapper())));
+    public void validateResponse(TestCaseRunner runner, HttpStatus status, Object duckProperties) {
+        validateResponse(runner, yellowDuckService, status, duckProperties);
+    }
+
+    @Description("Валидация полученного ответа по JsonPath")
+    public void validateResponse(TestCaseRunner runner, HttpStatus status, JsonPathMessageValidationContext.Builder body) {
+        validateResponse(runner, yellowDuckService,  status, body);
     }
 }
