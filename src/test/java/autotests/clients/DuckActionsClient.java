@@ -2,16 +2,17 @@ package autotests.clients;
 
 import autotests.BaseTest;
 import com.consol.citrus.TestCaseRunner;
+import com.consol.citrus.annotations.CitrusResource;
+import com.consol.citrus.context.TestContext;
 import com.consol.citrus.validation.json.JsonPathMessageValidationContext;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
+import org.testng.annotations.Optional;
+
+import static com.consol.citrus.actions.ExecuteSQLAction.Builder.sql;
+import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
 
 public class DuckActionsClient extends BaseTest {
-
-    // Добавлен для блока finally
-    public void duckDelete(TestCaseRunner runner, String id) {
-        sendDeleteRequest(runner, yellowDuckService, "/api/duck/delete", "id", id);
-    }
 
     public void duckIdExtract (TestCaseRunner runner) {
         extractVariables (runner, yellowDuckService, "$.id", "duckId");
@@ -72,5 +73,10 @@ public class DuckActionsClient extends BaseTest {
     @Description("Валидация полученного ответа по JsonPath")
     public void validateResponse(TestCaseRunner runner, HttpStatus status, JsonPathMessageValidationContext.Builder body) {
         validateResponse(runner, yellowDuckService,  status, body);
+    }
+
+    public void deleteDuckFinally (TestCaseRunner runner, String sql) {
+        runner.$(doFinally().actions(runner.$(sql(testDb)
+                .statement(sql))));
     }
 }

@@ -1,0 +1,1 @@
+DELETE FROM DUCK WHERE ID=${fakeId}; commit;

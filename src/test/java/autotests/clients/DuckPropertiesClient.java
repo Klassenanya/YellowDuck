@@ -5,6 +5,9 @@ import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.validation.json.JsonPathMessageValidationContext;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
+
+import static com.consol.citrus.actions.ExecuteSQLAction.Builder.sql;
+import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
 public class DuckPropertiesClient extends BaseTest {
@@ -39,10 +42,7 @@ public class DuckPropertiesClient extends BaseTest {
     }
 
     public void duckGetAllIds(TestCaseRunner runner) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .send()
-                .get("/api/duck/getAllIds"));
+        sendGetRequestGetAllIds(runner, yellowDuckService, "/api/duck/getAllIds");
     }
 
     public void duckUpdate(TestCaseRunner runner, String color, String height, String id, String material, String sound, String wingsState) {
@@ -75,5 +75,14 @@ public class DuckPropertiesClient extends BaseTest {
     @Description("Валидация полученного ответа по JsonPath")
     public void validateResponse(TestCaseRunner runner, HttpStatus status, JsonPathMessageValidationContext.Builder body) {
         validateResponse(runner, yellowDuckService,  status, body);
+    }
+
+    public void deleteDuckFinally (TestCaseRunner runner, String sql) {
+        runner.$(doFinally().actions(runner.$(sql(testDb)
+                .statement(sql))));
+    }
+
+    public void validateResponseResourcesAndExtractId(TestCaseRunner runner, HttpStatus status, String response) {
+        validateResponseResourcesAndExtractId(runner, yellowDuckService, status, response);
     }
 }

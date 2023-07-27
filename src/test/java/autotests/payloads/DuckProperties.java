@@ -21,7 +21,7 @@ public class DuckProperties {
     private double height;
 
     @JsonProperty
-    private int id;
+    private Integer id;
 
     @JsonProperty
     private String material;
