@@ -9,6 +9,7 @@ import com.consol.citrus.message.builder.ObjectMappingPayloadBuilder;
 import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
 import com.consol.citrus.validation.json.JsonPathMessageValidationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.qameta.allure.Step;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.core.io.ClassPathResource;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 
-import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Builder.fromBody;
 import static com.consol.citrus.actions.ExecuteSQLAction.Builder.sql;
@@ -33,6 +33,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
     @Autowired
     protected SingleConnectionDataSource testDb;
 
+    @Step("Создание уточки в БД")
     protected void databaseUpdate(TestCaseRunner runner, String sql) {
         runner.$(sql(testDb)
                 .statement(sql));
@@ -153,6 +154,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .validate(body));
     }
 
+    @Step("Валидация уточки в БД")
     protected void validateDuckInDatabase(TestCaseRunner runner, String id, String color, String height, String material, String sound, String wingsState) {
         runner.$(query(testDb)
                 .statement("SELECT * FROM DUCK WHERE ID=" + id)
@@ -177,6 +179,7 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .extract("DuckCounter", "duckCounter"));
     }
 
+    @Step("Очищение БД")
     protected void deleteAllInDatabase (TestCaseRunner runner) {
         runner.$(sql(testDb)
                .statement("DELETE FROM DUCK"));
@@ -192,13 +195,14 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .extract(fromBody().expression("$.id", "duckId")));
     }
 
-    protected void deleteDuckInDatabase (TestCaseRunner runner, String duckId) {
+    @Step("Удаление уточки из БД")
+    protected void deleteDuckInDatabase (TestCaseRunner runner) {
         runner.$(sql(testDb)
-                .statement("DELETE FROM DUCK WHERE ID=${" + duckId + "}"));
+                .statement("DELETE FROM DUCK WHERE ID=${duckId}"));
     }
 
     @Description("Генерация нового (несуществующего) id утки")
-    public void generateOneFakeId(TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
+    public void generateFakeId(TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
         duckCounterInDatabase(runner);
         runner.variable("DuckCounter", "${duckCounter}");
         Integer id;
@@ -215,28 +219,5 @@ public class BaseTest extends TestNGCitrusSpringSupport {
         String fakeId = newId.toString(); // формируем несуществующий id утки строковый
 
         runner.variable("fakeId", fakeId);
-    }
-
-    @Description("Генерация двух новых (несуществующих) id уток")
-    public void generateTwoFakeId(TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
-        duckCounterInDatabase(runner);
-        runner.variable("DuckCounter", "${duckCounter}");
-        Integer id;
-
-        // если в БД нет уток (DuckCounter=0), то создаем утку с id=0+1=1, иначе создаем утку с id=максимальный_id_существующей_утки+1
-        if (Integer.valueOf(context.getVariable("DuckCounter")) == 0) {id = 0;}
-        else {
-            maxDuckIdInDatabase(runner);
-            runner.variable("DuckMaxId", "${duckMaxId}");
-            id = Integer.valueOf(context.getVariable("DuckMaxId"));
-        }
-
-        Integer newId1 = id + 1; // формируем несуществующий id первой утки
-        Integer newId2 = id + 2; // формируем несуществующий id второй утки
-        String fakeId1 = newId1.toString(); // формируем несуществующий id первой утки строковый
-        String fakeId2 = newId2.toString(); // формируем несуществующий id второй утки строковый
-
-        runner.variable("fakeId1", fakeId1);
-        runner.variable("fakeId2", fakeId2);
     }
 }

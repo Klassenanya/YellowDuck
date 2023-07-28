@@ -1,70 +1,76 @@
 package autotests.tests;
 
 import autotests.clients.DuckActionsClient;
-import autotests.payloads.DuckProperties;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
+import com.consol.citrus.context.TestContext;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Flaky;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
+@Epic("Тестовый класс получения свойств уточки")
+@Feature("autotests.tests.DuckPropertiesTest")
 public class DuckPropertiesTest extends DuckActionsClient {
 
-    @Test(description = "Проверка свойств уточки, тест-кейс №1", priority = 1)
+    @Flaky
+    @Test(description = "successfulPropertiesActive", priority = 1)
     @CitrusTest
-    public void successfulProperties1(@Optional @CitrusResource TestCaseRunner runner) {
-        try {
-            DuckProperties duckProperties1 = new DuckProperties().color("yellow").height(0.01).material("rubber").sound("quack").wingsState("ACTIVE");
-            duckCreate(runner, duckProperties1);
-            duckIdExtract(runner);
-            duckProperties(runner, "${duckId}");
-            validateResponseResources(runner, HttpStatus.OK, "getDuckProperties/createYellowDuckActive.json");
-        } finally {
-            duckDelete(runner, "${duckId}");
-        }
+    @Description("Проверка свойств уточки, wingsState=ACTIVE")
+    public void successfulPropertiesActive(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
+        generateFakeId(runner, context);
+        deleteDuckFinally(runner, "DELETE FROM DUCK WHERE ID=${fakeId}");
+        databaseUpdate(runner, "insert into DUCK (id, color, height, material, sound, wings_state)\n" +
+                "values (${fakeId}, 'yellow', 0.01, 'rubber', 'quack','ACTIVE');");
+
+        duckProperties(runner, "${fakeId}");
+        validateResponseResources(runner, HttpStatus.OK, "getDuckProperties/createYellowDuckActive.json");
     }
 
-    @Test(description = "Проверка свойств уточки, тест-кейс №2", priority = 1)
+    @Flaky
+    @Test(description = "successfulPropertiesFixed", priority = 1)
     @CitrusTest
-    public void successfulProperties2(@Optional @CitrusResource TestCaseRunner runner) {
-        try {
-            DuckProperties duckProperties2 = new DuckProperties().color("yellow").height(0.01).material("rubber").sound("quack").wingsState("FIXED");
-            duckCreate(runner, duckProperties2);
-            duckIdExtract(runner);
-            duckProperties(runner, "${duckId}");
-            validateResponseResources(runner, HttpStatus.OK, "getDuckProperties/createYellowDuckFixed.json");
-        } finally {
-            duckDelete(runner, "${duckId}");
-        }
+    @Description("Проверка свойств уточки, wingsState=FIXED")
+    public void successfulPropertiesFixed(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
+        generateFakeId(runner, context);
+        deleteDuckFinally(runner, "DELETE FROM DUCK WHERE ID=${fakeId}");
+        databaseUpdate(runner, "insert into DUCK (id, color, height, material, sound, wings_state)\n" +
+                "values (${fakeId}, 'yellow', 0.01, 'rubber', 'quack','FIXED');");
+
+        duckProperties(runner, "${fakeId}");
+        validateResponseResources(runner, HttpStatus.OK, "getDuckProperties/createYellowDuckFixed.json");
     }
 
-    @Test(description = "Проверка свойств уточки, тест-кейс №3", priority = 1)
+    @Flaky
+    @Test(description = "successfulPropertiesUndefined", priority = 1)
     @CitrusTest
-    public void successfulProperties3(@Optional @CitrusResource TestCaseRunner runner) {
-        try {
-            DuckProperties duckProperties3 = new DuckProperties().color("yellow").height(0.01).material("rubber").sound("quack").wingsState("UNDEFINED");
-            duckCreate(runner, duckProperties3);
-            duckIdExtract(runner);
-            duckProperties(runner, "${duckId}");
-            validateResponseResources(runner, HttpStatus.OK, "getDuckProperties/createYellowDuckUndefined.json");
-        } finally {
-            duckDelete(runner, "${duckId}");
-        }
+    @Description("Проверка свойств уточки, wingsState=UNDEFINED")
+    public void successfulPropertiesUndefined(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
+        generateFakeId(runner, context);
+        deleteDuckFinally(runner, "DELETE FROM DUCK WHERE ID=${fakeId}");
+        databaseUpdate(runner, "insert into DUCK (id, color, height, material, sound, wings_state)\n" +
+                "values (${fakeId}, 'yellow', 0.01, 'rubber', 'quack','UNDEFINED');");
+
+        duckProperties(runner, "${fakeId}");
+        validateResponseResources(runner, HttpStatus.OK, "getDuckProperties/createYellowDuckUndefined.json");
     }
 
-    @Test(description = "Проверка свойств уточки, тест-кейс №13", priority = 1)
+    @Flaky
+    @Test(description = "successfulPropertiesMetal", priority = 1)
     @CitrusTest
-    public void successfulProperties4(@Optional @CitrusResource TestCaseRunner runner) {
-        try {
-            DuckProperties duckProperties4 = new DuckProperties().color("yellow").height(0.01).material("metal").sound("quack").wingsState("ACTIVE");
-            duckCreate(runner, duckProperties4);
-            duckIdExtract(runner);
-            duckProperties(runner, "${duckId}");
-            validateResponseResources(runner, HttpStatus.OK, "getDuckProperties/createYellowDuckMetal.json");
-        } finally {
-            duckDelete(runner, "${duckId}");
-        }
+    @Description("Проверка свойств уточки, material=metal")
+    public void successfulPropertiesMetal(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
+        generateFakeId(runner, context);
+        deleteDuckFinally(runner, "DELETE FROM DUCK WHERE ID=${fakeId}");
+        databaseUpdate(runner, "insert into DUCK (id, color, height, material, sound, wings_state)\n" +
+                "values (${fakeId}, 'yellow', 0.01, 'metal', 'quack','ACTIVE');");
+
+        duckProperties(runner, "${fakeId}");
+        validateResponseResources(runner, HttpStatus.OK, "getDuckProperties/createYellowDuckMetal.json");
     }
 }
 

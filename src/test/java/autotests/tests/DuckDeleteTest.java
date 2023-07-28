@@ -6,44 +6,43 @@ import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
 import com.consol.citrus.context.TestContext;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Flaky;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
+@Epic("Тестовый класс удаления уточки")
+@Feature("autotests.tests.DuckDeleteTest")
 public class DuckDeleteTest extends DuckPropertiesClient {
 
-    @Test(description = "Проверка того, что существующая уточка удалена, тест-кейс №1", priority = 1)
+    @Test(description = "successfulExistDelete", priority = 1)
     @CitrusTest
-    public void successfulDelete1(@Optional @CitrusResource TestCaseRunner runner) {
-        try {
-            duckCreate(runner, "yellow", "0.01", "rubber", "quack", "ACTIVE");
-            duckIdExtract(runner);
-            duckDelete(runner, "${duckId}");
-            DuckAnswerMessage duckAnswerMessage1 = new DuckAnswerMessage().message("Duck is deleted");
-            validateResponse(runner, HttpStatus.OK, duckAnswerMessage1);
-        } finally {
-            duckDelete(runner, "${duckId}");
-        }
+    @Description("Проверка того, что существующая уточка удалена")
+    public void successfulExistDelete(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
+        generateFakeId(runner, context);
+        deleteDuckFinally(runner, "DELETE FROM DUCK WHERE ID=${fakeId}");
+        databaseUpdate(runner, "insert into DUCK (id, color, height, material, sound, wings_state)\n" +
+                "values (${fakeId}, 'yellow', 0.01, 'rubber', 'quack','ACTIVE');");
+
+        duckDelete(runner, "${fakeId}");
+        DuckAnswerMessage duckAnswerMessage1 = new DuckAnswerMessage().message("Duck is deleted");
+        validateResponse(runner, HttpStatus.OK, duckAnswerMessage1);
     }
 
-    @Test(description = "Проверка того, что несуществующая уточка не удалена, тест-кейс №2", priority = 1)
+    @Flaky
+    @Test(description = "notSuccessfulNotExistDelete", priority = 1)
     @CitrusTest
-    public void successfulDelete2(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
-        try {
-            duckCreate(runner, "yellow", "0.01", "rubber", "quack", "ACTIVE");
-            duckIdExtract(runner);
+    @Description("Проверка того, что несуществующая уточка не удалена")
+    public void notSuccessfulNotExistDelete(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
+        runner.variable("duckId", "123456789");
+        deleteDuckInDatabase(runner); // предварительно удаляем из БД утку с таким id
 
-            runner.variable("id", "${duckId}");
-            Integer id = Integer.valueOf(context.getVariable("id"));
-            Integer newId = id + 100; // формируем несуществующий id утки
-            String fakeId = newId.toString(); // формируем несуществующий id утки
-            duckDelete(runner, fakeId);
-
-            DuckAnswerMessage duckAnswerMessage1 = new DuckAnswerMessage().message("Duck with id = " + fakeId + " is not found");
-            validateResponse(runner, HttpStatus.OK, duckAnswerMessage1);
-        } finally {
-            duckDelete(runner, "${duckId}");
-        }
+        duckDelete(runner, "${duckId}");
+        DuckAnswerMessage duckAnswerMessage1 = new DuckAnswerMessage().message("Duck with id = ${duckId} is not found");
+        validateResponse(runner, HttpStatus.OK, duckAnswerMessage1);
     }
 }
 
